@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
 import 'package:intl/intl.dart';
@@ -13,7 +14,7 @@ class FormValidator extends StatefulWidget {
 class _FormValidatorState extends State<FormValidator>
     with SingleTickerProviderStateMixin {
   DateTime? date;
-
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -21,20 +22,45 @@ class _FormValidatorState extends State<FormValidator>
       body: Form(
         child: SingleChildScrollView(
             child: Column(
+          key: _formKey,
           children: [
             TextFormField(
               keyboardType: TextInputType.name,
+              onSaved: (String? value) {
+                // This optional block of code can be used to run
+                // code when the user saves the form.
+              },
+              validator: (String? value) {
+                return (value != null && value.contains('@'))
+                    ? 'Do not use the @ char.'
+                    : null;
+              },
               decoration: InputDecoration(
+                  // prefixIcon: Padding(
+                  //   padding: EdgeInsets.only(
+                  //       bottom: 5, top: 2), // add padding to adjust icon
+                  //   child: Icon(Icons.account_circle),
+                  // ),
                   hintText: "Input your full name",
+                  icon: Icon(Icons.person),
                   labelText: "Name",
                   border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8.0))),
             ),
             SizedBox(height: 16),
             TextFormField(
-              keyboardType: TextInputType.phone,
+              keyboardType: TextInputType.number,
+              inputFormatters: <TextInputFormatter>[
+                FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
+              ],
               decoration: InputDecoration(
+                  // prefixIcon: Padding(
+                  //   padding: EdgeInsets.only(
+                  //       bottom: 5, top: 2), // add padding to adjust icon
+                  //   child: Icon(Icons.contact_phone),
+                  // ),
                   hintText: "Input your phone",
+                  icon: Icon(Icons.phone_iphone),
                   labelText: "Phone",
                   border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8.0))),
@@ -43,7 +69,13 @@ class _FormValidatorState extends State<FormValidator>
             TextFormField(
               readOnly: true,
               decoration: InputDecoration(
+                  // prefixIcon: Padding(
+                  //   padding: EdgeInsets.only(
+                  //       bottom: 5, top: 2), // add padding to adjust icon
+                  //   child: Icon(Icons.date_range),
+                  // ),
                   hintText: date.toString(),
+                  icon: Icon(Icons.date_range),
                   labelText: 'Date',
                   border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8.0))),
@@ -80,7 +112,14 @@ class _FormValidatorState extends State<FormValidator>
                   child: ElevatedButton(
                       style:
                           ElevatedButton.styleFrom(primary: Colors.greenAccent),
-                      onPressed: () {},
+                      onPressed: () {
+                        if (_formKey.currentState!.validate()) {
+                          return;
+                        }
+                        Scaffold.of(context).showSnackBar(SnackBar(
+                          content: Text("New Notification"),
+                        ));
+                      },
                       child: Text("Get Detail")))
             ])
           ],

@@ -14,6 +14,7 @@ class FormValidator extends StatefulWidget {
 class _FormValidatorState extends State<FormValidator>
     with SingleTickerProviderStateMixin {
   DateTime? date;
+  TextEditingController dateCtl = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   @override
   Widget build(BuildContext context) {
@@ -67,6 +68,7 @@ class _FormValidatorState extends State<FormValidator>
             ),
             SizedBox(height: 16),
             TextFormField(
+              controller: dateCtl,
               readOnly: true,
               decoration: InputDecoration(
                   // prefixIcon: Padding(
@@ -80,19 +82,23 @@ class _FormValidatorState extends State<FormValidator>
                   border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8.0))),
               onTap: () async {
-                await showDatePicker(
+                FocusScope.of(context).requestFocus(new FocusNode());
+                date = await showDatePicker(
                   context: context,
                   initialDate: DateTime.now(),
                   firstDate: DateTime(1950),
                   lastDate: DateTime(2220),
-                ).then((selectedDate) {
-                  setState(() {
-                    date = selectedDate;
-                  });
-                });
+                );
+
+                dateCtl.text = date.toString();
+                // ).then((selectedDate) {
+                //   setState(() {
+                //     date = selectedDate;
+                //   });
+                // });
               },
-              validator: (selectedDate) {
-                if (selectedDate == null || selectedDate.isEmpty) {
+              validator: (date) {
+                if (date == null || date.isEmpty) {
                   return 'Please enter date.';
                 }
                 return "enter time";

@@ -13,7 +13,7 @@ class FormValidator extends StatefulWidget {
 
 class _FormValidatorState extends State<FormValidator>
     with SingleTickerProviderStateMixin {
-  DateTime? date;
+  DateTime date = DateTime.now();
   TextEditingController dateCtl = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   @override
@@ -76,21 +76,27 @@ class _FormValidatorState extends State<FormValidator>
                   //       bottom: 5, top: 2), // add padding to adjust icon
                   //   child: Icon(Icons.date_range),
                   // ),
-                  hintText: date.toString(),
+                  hintText: 'Your day of birth',
                   icon: Icon(Icons.date_range),
                   labelText: 'Date',
                   border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8.0))),
               onTap: () async {
                 FocusScope.of(context).requestFocus(new FocusNode());
-                date = await showDatePicker(
+                await showDatePicker(
                   context: context,
-                  initialDate: DateTime.now(),
+                  initialDate: date,
                   firstDate: DateTime(1950),
                   lastDate: DateTime(2220),
+                  errorFormatText: 'Enter valid date',
+                  errorInvalidText: 'Enter date in valid range',
                 );
-
-                dateCtl.text = date.toString();
+                if (dateCtl != null && dateCtl != date) {
+                  setState(() => dateCtl.text = date.toString());
+                  print(dateCtl);
+                } else {
+                  print(dateCtl);
+                }
                 // ).then((selectedDate) {
                 //   setState(() {
                 //     date = selectedDate;

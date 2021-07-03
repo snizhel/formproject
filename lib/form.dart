@@ -13,9 +13,21 @@ class FormValidator extends StatefulWidget {
 
 class _FormValidatorState extends State<FormValidator>
     with SingleTickerProviderStateMixin {
+  final nameHolder = TextEditingController();
+  final phoneHolder = TextEditingController();
   DateTime date = DateTime.now();
   TextEditingController dateCtl = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  clearTextInput() {
+    phoneHolder.clear();
+    nameHolder.clear();
+    dateCtl.clear();
+  }
+
+  String Name = "";
+  String Phone = "";
+  String DOB = "";
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -26,6 +38,7 @@ class _FormValidatorState extends State<FormValidator>
           key: _formKey,
           children: [
             TextFormField(
+              controller: nameHolder,
               keyboardType: TextInputType.name,
               onSaved: (String? value) {
                 // This optional block of code can be used to run
@@ -45,11 +58,18 @@ class _FormValidatorState extends State<FormValidator>
                   hintText: "Input your full name",
                   icon: Icon(Icons.person),
                   labelText: "Name",
+                  suffixIcon: IconButton(
+                    icon: Icon(Icons.clear),
+                    onPressed: () {
+                      nameHolder.clear();
+                    },
+                  ),
                   border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8.0))),
             ),
             SizedBox(height: 16),
             TextFormField(
+              controller: phoneHolder,
               keyboardType: TextInputType.number,
               inputFormatters: <TextInputFormatter>[
                 FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
@@ -63,6 +83,12 @@ class _FormValidatorState extends State<FormValidator>
                   hintText: "Input your phone",
                   icon: Icon(Icons.phone_iphone),
                   labelText: "Phone",
+                  suffixIcon: IconButton(
+                    icon: Icon(Icons.clear),
+                    onPressed: () {
+                      phoneHolder.clear();
+                    },
+                  ),
                   border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8.0))),
             ),
@@ -79,6 +105,12 @@ class _FormValidatorState extends State<FormValidator>
                   hintText: 'Your day of birth',
                   icon: Icon(Icons.date_range),
                   labelText: 'Date',
+                  suffixIcon: IconButton(
+                    icon: Icon(Icons.clear),
+                    onPressed: () {
+                      dateCtl.clear();
+                    },
+                  ),
                   border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8.0))),
               onTap: () async {
@@ -115,7 +147,7 @@ class _FormValidatorState extends State<FormValidator>
               Expanded(
                   child: ElevatedButton(
                       style: ElevatedButton.styleFrom(primary: Colors.red),
-                      onPressed: () {},
+                      onPressed: clearTextInput,
                       child: Text("Clear"))),
               SizedBox(
                 width: 16,
@@ -125,6 +157,11 @@ class _FormValidatorState extends State<FormValidator>
                       style:
                           ElevatedButton.styleFrom(primary: Colors.greenAccent),
                       onPressed: () {
+                        setState(() {
+                          Name = nameHolder.text;
+                          Phone = phoneHolder.text;
+                          DOB = dateCtl.text;
+                        });
                         if (_formKey.currentState!.validate()) {
                           return;
                         }
@@ -133,7 +170,18 @@ class _FormValidatorState extends State<FormValidator>
                         ));
                       },
                       child: Text("Get Detail")))
-            ])
+            ]),
+            Container(
+              alignment: Alignment.bottomCenter,
+              padding: EdgeInsets.only(left: 120.0),
+              child: Row(
+                children: <Widget>[
+                  Text("Hi, Your Name is :   " + Name),
+                  Text("Hi, Your Phone is :   " + Phone),
+                  Text("Hi, Your DOB is :   " + DOB),
+                ],
+              ),
+            ),
           ],
         )),
       ),
